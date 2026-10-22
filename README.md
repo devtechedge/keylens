@@ -23,6 +23,14 @@ discovery -> inventory -> usage baselines -> anomaly alerts -> rotation jobs.
 > that resets on cold start. No real API keys are stored or touched. The
 > full product runs identically on your machine with `pnpm seed` + `pnpm dev`.
 
+## Screenshots
+
+![Dashboard](docs/screenshots/01-dashboard.png)
+
+![Onboarding](docs/screenshots/02-onboarding.png)
+
+![Settings](docs/screenshots/03-settings.png)
+
 ## Quickstart
 
 ```bash
