@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getAppDb } from "@/db";
+import { readyDb } from "@/db";
 import { getFirstOrg, usageSeries } from "@/data";
 import { withGate } from "@/gate";
 
@@ -12,7 +12,7 @@ export async function GET(req: Request) {
     if (!keyId) {
       return NextResponse.json({ error: "keyId is required" }, { status: 400 });
     }
-    const db = getAppDb();
+    const db = await readyDb();
     const org = await getFirstOrg(db);
     return NextResponse.json({ points: await usageSeries(db, org, keyId) });
   });

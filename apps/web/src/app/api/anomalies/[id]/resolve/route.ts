@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
 import { anomalies } from "@keylens/db";
-import { getAppDb } from "@/db";
+import { readyDb } from "@/db";
 import { withGate } from "@/gate";
 
 export const dynamic = "force-dynamic";
@@ -18,7 +18,7 @@ export async function POST(
 ) {
   return withGate(req, async () => {
     const { id } = await params;
-    const db = getAppDb();
+    const db = await readyDb();
     const result = await db
       .update(anomalies)
       .set({ resolvedAt: Date.now() })

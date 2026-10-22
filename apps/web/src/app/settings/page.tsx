@@ -1,4 +1,4 @@
-import { getAppDb } from "@/db";
+import { readyDb } from "@/db";
 import { getFirstOrg } from "@/data";
 import { Header } from "@/components/ui/Header";
 import { SettingsPanel } from "@/components/settings/SettingsPanel";
@@ -10,7 +10,7 @@ export const metadata = {
 };
 
 export default async function SettingsPage() {
-  const db = getAppDb();
+  const db = await readyDb();
   const org = await getFirstOrg(db);
   const mockMode = process.env.MOCK_MODE === "true";
 

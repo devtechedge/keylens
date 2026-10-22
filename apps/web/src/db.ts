@@ -60,4 +60,15 @@ export function getAppDb(): KeyLensDb {
   return db;
 }
 
+/**
+ * Await the boot-time demo seed before querying. API routes and server
+ * components MUST use this so a cold serverless instance never returns an
+ * empty dashboard while the seed is still writing.
+ */
+export async function readyDb(): Promise<KeyLensDb> {
+  const target = getAppDb();
+  if (seedPromise) await seedPromise;
+  return target;
+}
+
 export type { KeyLensDb };

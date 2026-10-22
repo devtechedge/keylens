@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
 import { orgs } from "@keylens/db";
-import { getAppDb } from "@/db";
+import { readyDb } from "@/db";
 import { getFirstOrg } from "@/data";
 import { withGate } from "@/gate";
 
@@ -17,7 +17,7 @@ const VALID_SCHEDULES = ["weekly", "monthly", "manual"];
 export async function PATCH(req: Request) {
   return withGate(req, async () => {
     const body = await req.json().catch(() => ({}));
-    const db = getAppDb();
+    const db = await readyDb();
     const org = await getFirstOrg(db);
     if (!org) {
       return NextResponse.json(

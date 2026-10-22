@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { runRotation } from "@keylens/rotation";
-import { getAppDb } from "@/db";
+import { readyDb } from "@/db";
 import { getFirstOrg } from "@/data";
 import { withGate } from "@/gate";
 
@@ -13,7 +13,7 @@ export async function POST(req: Request) {
     if (!keyId) {
       return NextResponse.json({ error: "keyId is required" }, { status: 400 });
     }
-    const db = getAppDb();
+    const db = await readyDb();
     const org = await getFirstOrg(db);
     if (!org) {
       return NextResponse.json(

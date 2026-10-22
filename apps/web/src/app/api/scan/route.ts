@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { scanOrg } from "@keylens/connectors";
-import { getAppDb } from "@/db";
+import { readyDb } from "@/db";
 import { getFirstOrg } from "@/data";
 import { withGate } from "@/gate";
 
@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
   return withGate(req, async () => {
-    const db = getAppDb();
+    const db = await readyDb();
     const org = await getFirstOrg(db);
     if (!org) {
       return NextResponse.json(
