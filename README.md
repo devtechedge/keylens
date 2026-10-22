@@ -11,6 +11,18 @@ This repository is the **MVP scaffold**: a working end-to-end product in mock
 mode. It runs with zero external credentials and demonstrates the full loop:
 discovery -> inventory -> usage baselines -> anomaly alerts -> rotation jobs.
 
+![Live Demo](https://img.shields.io/badge/Live%20Demo-keylens--ashy.vercel.app-6366f1)
+![License](https://img.shields.io/badge/License-MIT-22c55e)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6)
+
+## Live Demo
+
+**https://keylens-ashy.vercel.app**
+
+> Demo mode: runs against an ephemeral seeded database (Acme Labs demo org)
+> that resets on cold start. No real API keys are stored or touched. The
+> full product runs identically on your machine with `pnpm seed` + `pnpm dev`.
+
 ## Quickstart
 
 ```bash
