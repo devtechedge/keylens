@@ -6,6 +6,10 @@ export interface HeaderNavItem {
   label: string;
 }
 
+const DEFAULT_NAV: HeaderNavItem[] = [
+  { href: "/pricing", label: "Pricing" },
+];
+
 export function Header({
   brand,
   orgName,
@@ -17,6 +21,10 @@ export function Header({
   demo?: boolean;
   nav?: HeaderNavItem[];
 }) {
+  const merged: HeaderNavItem[] = [];
+  for (const item of [...DEFAULT_NAV, ...(nav ?? [])]) {
+    if (!merged.some((m) => m.href === item.href)) merged.push(item);
+  }
   return (
     <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/85 backdrop-blur dark:border-slate-800/80 dark:bg-slate-950/80">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
@@ -40,7 +48,7 @@ export function Header({
           </div>
         </div>
         <nav className="flex items-center gap-1 text-sm">
-          {nav?.map((item) => (
+          {merged.map((item) => (
             <Link
               key={item.href}
               href={item.href}

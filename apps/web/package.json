@@ -15,6 +15,7 @@
     "@keylens/db": "workspace:*",
     "@keylens/rotation": "workspace:*",
     "@keylens/alerts": "workspace:*",
+    "@keylens/billing": "workspace:*",
     "drizzle-orm": "^0.40.0",
     "next": "latest",
     "react": "latest",

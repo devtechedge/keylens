@@ -97,3 +97,16 @@ export interface AlertTestPayload {
   ok: boolean;
   delivered: string[];
 }
+
+export interface BillingStatusPayload {
+  plan: string | null;
+  status: string;
+  currentPeriodEnd: number | null;
+}
+
+export interface CheckoutPayload {
+  ok: boolean;
+  url?: string;
+  sessionId?: string;
+  error?: string;
+}
