@@ -1,5 +1,6 @@
 import "./real-connectors";
 
+export * from "./real-connectors";
 export * from "./discover";
 export * from "./scan";
 export * from "./usage";

@@ -76,6 +76,8 @@ export interface ScanResultPayload {
     sourceRef?: string;
   }[];
   providersFound: string[];
+  real?: boolean;
+  sourceOrg?: string;
 }
 
 export interface RotationResultPayload {
@@ -108,5 +110,14 @@ export interface CheckoutPayload {
   ok: boolean;
   url?: string;
   sessionId?: string;
+  error?: string;
+}
+
+export interface ConnectGitHubPayload {
+  ok: boolean;
+  org?: string;
+  type?: string;
+  publicRepos?: number;
+  tokenSource?: "provided" | "server";
   error?: string;
 }

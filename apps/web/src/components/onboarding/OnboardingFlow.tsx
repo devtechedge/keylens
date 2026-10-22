@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import type { ScanResultPayload } from "@/api-types";
+import type { ConnectGitHubPayload, ScanResultPayload } from "@/api-types";
 import { apiFetch } from "@/lib/fetch";
 import { ProviderIcon } from "@/components/ui/Presentational";
 
@@ -23,20 +23,35 @@ const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 export function OnboardingFlow() {
   const router = useRouter();
   const [phase, setPhase] = useState<Phase>("idle");
+  const [orgInput, setOrgInput] = useState("");
+  const [tokenInput, setTokenInput] = useState("");
+  const [connectedOrg, setConnectedOrg] = useState<string | null>(null);
   const [repos, setRepos] = useState<number | null>(null);
   const [scan, setScan] = useState<ScanResultPayload | null>(null);
   const [error, setError] = useState<string | null>(null);
   const progressRef = useRef<HTMLDivElement>(null);
 
+  const realTarget = orgInput.trim().length > 0;
+
   async function connect() {
     setError(null);
     setPhase("connecting");
     try {
-      const res = await apiFetch<{ ok: boolean; repos: number }>(
-        "/api/onboarding/mock-connect",
-        { method: "POST", body: JSON.stringify({}) },
-      );
-      setRepos(res.repos);
+      if (realTarget) {
+        const res = await apiFetch<ConnectGitHubPayload>("/api/onboarding/connect-github", {
+          method: "POST",
+          body: JSON.stringify({ org: orgInput.trim(), token: tokenInput.trim() || undefined }),
+        });
+        setConnectedOrg(res.org ?? orgInput.trim());
+        setRepos(res.publicRepos ?? null);
+      } else {
+        const res = await apiFetch<{ ok: boolean; repos: number }>(
+          "/api/onboarding/mock-connect",
+          { method: "POST", body: JSON.stringify({}) },
+        );
+        setConnectedOrg(null);
+        setRepos(res.repos);
+      }
       setPhase("connected");
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
@@ -51,7 +66,10 @@ export function OnboardingFlow() {
       const [result] = await Promise.all([
         apiFetch<ScanResultPayload>("/api/scan", {
           method: "POST",
-          body: JSON.stringify({}),
+          body: JSON.stringify({
+            org: realTarget ? orgInput.trim() : undefined,
+            token: realTarget ? tokenInput.trim() || undefined : undefined,
+          }),
         }),
         delay(1500),
       ]);
@@ -94,7 +112,9 @@ export function OnboardingFlow() {
           <p className="mt-1.5 text-sm text-slate-500 dark:text-slate-400">
             {phase === "results"
               ? "KeyLens found your AI keys and is watching them."
-              : "We'll scan your repos for exposed AI keys. Fully mocked for this demo."}
+              : realTarget
+                ? "We'll scan your repos for exposed AI keys with your GitHub token."
+                : "Demo mode: connect a mock org or enter a real GitHub org below."}
           </p>
         </div>
 
@@ -106,12 +126,33 @@ export function OnboardingFlow() {
 
         <div className="mt-6 space-y-4">
           {phase === "idle" && (
-            <button
-              onClick={connect}
-              className="w-full rounded-xl bg-slate-900 px-4 py-3 text-sm font-medium text-white transition hover:bg-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700"
-            >
-              Connect GitHub
-            </button>
+            <>
+              <div className="space-y-2">
+                <input
+                  type="text"
+                  value={orgInput}
+                  onChange={(e) => setOrgInput(e.target.value)}
+                  placeholder="GitHub org or username (e.g. acme)"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-800 dark:bg-slate-950/60 dark:text-slate-100"
+                />
+                <input
+                  type="password"
+                  value={tokenInput}
+                  onChange={(e) => setTokenInput(e.target.value)}
+                  placeholder="Fine-grained PAT (optional; used only for this scan)"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-800 dark:bg-slate-950/60 dark:text-slate-100"
+                />
+              </div>
+              <button
+                onClick={connect}
+                className="w-full rounded-xl bg-slate-900 px-4 py-3 text-sm font-medium text-white transition hover:bg-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700"
+              >
+                {realTarget ? "Connect GitHub" : "Connect GitHub (demo)"}
+              </button>
+              <p className="text-center text-xs text-slate-400 dark:text-slate-500">
+                Leave fields empty to preview with the seeded demo organization.
+              </p>
+            </>
           )}
 
           {phase === "connecting" && (
@@ -125,7 +166,13 @@ export function OnboardingFlow() {
               <div className="flex items-center justify-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-700 dark:text-emerald-300">
                 <span>✓</span>
                 <span>
-                  Connected · {repos ?? 0} repositories
+                  {connectedOrg ? (
+                    <>
+                      Connected · {connectedOrg} · {repos ?? 0} public repos
+                    </>
+                  ) : (
+                    <>Connected · {repos ?? 0} repositories (demo)</>
+                  )}
                 </span>
               </div>
               <button
@@ -179,6 +226,7 @@ export function OnboardingFlow() {
               <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-center text-sm text-emerald-700 dark:text-emerald-300">
                 ✓ {scan.newKeys.length} keys found · {scan.candidateSecrets} candidate
                 secrets · {scan.scannedRepos} repos scanned
+                {scan.real && ` · ${scan.sourceOrg ?? ""}`}
               </div>
               <button
                 onClick={() => router.push("/")}
