@@ -99,7 +99,7 @@ export function resolveDbPath(envUrl = process.env.DATABASE_URL): string {
   const m = /^file:(.+)$/.exec(envUrl);
   const p = m ? m[1]! : envUrl;
   if (path.isAbsolute(p)) return p;
-  return path.resolve(process.cwd(), p);
+  return path.resolve(/*turbopackIgnore: true*/ process.cwd(), p);
 }
 
 /** "memory:" maps to a unique temp file; bootstrap is synchronous via node:sqlite. */
