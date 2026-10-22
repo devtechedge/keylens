@@ -1,10 +1,13 @@
-import Database from "better-sqlite3";
-import { drizzle, type BetterSQLite3Database } from "drizzle-orm/better-sqlite3";
+import { createClient, type Client as LibSQLClient } from "@libsql/client";
+import { drizzle, type LibSQLDatabase } from "drizzle-orm/libsql";
+import { DatabaseSync } from "node:sqlite";
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
+import crypto from "node:crypto";
 import * as schema from "./schema";
 
-export type KeyLensDb = BetterSQLite3Database<typeof schema>;
+export type KeyLensDb = LibSQLDatabase<typeof schema>;
 
 let cached: KeyLensDb | null = null;
 let cachedPath: string | null = null;
@@ -84,6 +87,12 @@ CREATE INDEX IF NOT EXISTS rotation_org_sched_idx ON rotation_jobs (org_id, sche
 CREATE INDEX IF NOT EXISTS rotation_key_idx ON rotation_jobs (key_id);
 `;
 
+/** Convert a filesystem path to a libsql file URL. */
+function toFileUrl(dbPath: string): string {
+  const p = path.resolve(dbPath).split(path.sep).join("/");
+  return `file:${p}`;
+}
+
 /** Resolve the SQLite file path. DATABASE_URL=file:./data/keylens.db is resolved relative to cwd. */
 export function resolveDbPath(envUrl = process.env.DATABASE_URL): string {
   if (!envUrl) return path.join(process.cwd(), "data", "keylens.db");
@@ -93,18 +102,33 @@ export function resolveDbPath(envUrl = process.env.DATABASE_URL): string {
   return path.resolve(process.cwd(), p);
 }
 
+/** "memory:" maps to a unique temp file; bootstrap is synchronous via node:sqlite. */
+function materializePath(dbPath: string): string {
+  if (dbPath !== ":memory:") return dbPath;
+  return path.join(os.tmpdir(), `keylens-test-${crypto.randomBytes(6).toString("hex")}.db`);
+}
+
+/** Synchronous table bootstrap using the built-in node:sqlite (no native deps). */
+function bootstrapFile(dbPath: string): void {
+  if (dbPath === ":memory:") return;
+  fs.mkdirSync(path.dirname(dbPath), { recursive: true });
+  const sqlite = new DatabaseSync(dbPath);
+  sqlite.exec("PRAGMA journal_mode=WAL");
+  sqlite.exec(INIT_SQL);
+  sqlite.close();
+}
+
 /**
- * Get the shared Drizzle client. Bootstraps tables on first open, so every
- * consumer (worker, web app, tests) runs with zero setup. Pass a path like
- * ":memory:" for tests.
+ * Get the shared Drizzle client (libsql, local file). Bootstraps tables
+ * synchronously on first open, so every consumer (worker, web app, tests)
+ * runs with zero setup. Pass ":memory:" for throwaway test databases.
  */
 export function getDb(dbPath = resolveDbPath()): KeyLensDb {
   if (cached && cachedPath === dbPath) return cached;
-  if (dbPath !== ":memory:") fs.mkdirSync(path.dirname(dbPath), { recursive: true });
-  const sqlite = new Database(dbPath);
-  sqlite.pragma("journal_mode = WAL");
-  sqlite.exec(INIT_SQL);
-  const db = drizzle(sqlite, { schema });
+  const file = materializePath(dbPath);
+  bootstrapFile(file);
+  const client: LibSQLClient = createClient({ url: toFileUrl(file) });
+  const db = drizzle(client, { schema });
   cached = db;
   cachedPath = dbPath;
   return db;
