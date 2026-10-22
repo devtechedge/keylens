@@ -308,7 +308,8 @@ function buildUsage(hourBase: number): UsageSeedRow[] {
 }
 
 function buildAnomalies(hourBase: number) {
-  const spikeDayStart = hourBase - 72 * HOUR_MS;
+  // Spike hours span ages 72..95; the spike day starts at the oldest spike hour.
+  const spikeDayStart = hourBase - 95 * HOUR_MS;
   const yesterday = hourBase - 24 * HOUR_MS;
   return [
     {
@@ -369,8 +370,8 @@ async function main(): Promise<void> {
 
   const db = getDb(dbPath);
 
-  // 1. Org
-  db.insert(orgs)
+  // 1. Org (libsql client is async — always await .run())
+  await db.insert(orgs)
     .values({
       id: ORG_ID,
       name: ORG_NAME,
@@ -383,19 +384,19 @@ async function main(): Promise<void> {
 
   // 2. Keys
   const keyRows = buildKeys(now, lastSeenAt);
-  db.insert(keys).values(keyRows).run();
+  await db.insert(keys).values(keyRows).run();
 
   // 3. Usage (14 days × 24h × 6 keys)
   const usageRows = buildUsage(hourBase);
   for (let i = 0; i < usageRows.length; i += 250) {
-    db.insert(usagePoints).values(usageRows.slice(i, i + 250)).run();
+    await db.insert(usagePoints).values(usageRows.slice(i, i + 250)).run();
   }
 
   // 4. Anomalies
-  db.insert(anomalies).values(buildAnomalies(hourBase)).run();
+  await db.insert(anomalies).values(buildAnomalies(hourBase)).run();
 
   // 5. Rotation job (queued for the leaked key, next Monday 09:00 local)
-  db.insert(rotationJobs)
+  await db.insert(rotationJobs)
     .values({
       id: "rot-001",
       orgId: ORG_ID,
