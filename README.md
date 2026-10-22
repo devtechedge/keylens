@@ -80,11 +80,24 @@ provide credentials (OpenAI, GitHub, Vercel, Slack) and flip `MOCK_MODE=false`.
 
 ## Roadmap
 
-1. Real connectors: GitHub (repos + Actions + history), Vercel, OpenAI usage,
-   cloud IAM, secret managers. Auto-rotate where provider APIs allow.
-2. Egress gateway (proxy) for safe rotation + ground-truth spend per key.
-3. Stripe billing: $99/mo tier + annual plan, trial funnel from free scans.
-4. Multi-tenant auth (Supabase/Auth.js), SSO, audit logs, SOC 2 posture.
+The scaffold ships a working inventory + spend-alert loop. The genuinely
+unsolved part of this problem is **fan-out + verification + rollback**: one
+logical secret lives in N places (Vercel env vars, GitHub Actions secrets,
+Supabase, local `.env`, CI), so a safe rotation means creating a replacement,
+writing it to every consumer in the right order, proving the new key is live
+and the old one is idle, and only then revoking. That engine is the core next
+build.
+
+1. Rotation engine: fan-out + verification + rollback against real consumers
+   (Vercel, GitHub Actions, local `.env`). Cadence is configurable; weekly is
+   only the demo default, production guidance is quarterly or on exposure.
+2. Real connectors via provider admin APIs (OpenAI service-account keys with
+   expiry, Anthropic admin key, AWS/GCP IAM). Auto-rotate where native APIs
+   allow; guided rotation elsewhere.
+3. Egress gateway (proxy) for ground-truth spend per key and zero-downtime
+   credential swap.
+4. Stripe billing: `$99/mo` tier + annual plan, trial funnel from free scans.
+5. Multi-tenant auth (Supabase/Auth.js), SSO, audit logs, SOC 2 posture.
 
 ## Status
 
