@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { getDb, type KeyLensDb } from "@keylens/db";
+import { getDb, type KeyLensDb, seedDemoData, orgs } from "@keylens/db";
 
 /**
  * The seed writes to packages/db/data/keylens.db (relative to the db package
@@ -31,10 +31,31 @@ export function appDbPath(): string {
 }
 
 let db: KeyLensDb | null = null;
+let seedPromise: Promise<void> | null = null;
+
+/**
+ * On serverless hosts (Vercel) the SQLite file is ephemeral: a fresh instance
+ * starts with an empty database. When SEED_DEMO_ON_EMPTY is not "false", we
+ * seed the demo story once per cold start so the public demo always shows
+ * data. The seed is idempotent by guard: only runs when the org table is
+ * empty.
+ */
+async function ensureDemoSeed(target: KeyLensDb): Promise<void> {
+  const enabled = process.env.SEED_DEMO_ON_EMPTY !== "false";
+  if (!enabled) return;
+  const orgRows = await target.select({ id: orgs.id }).from(orgs).limit(1);
+  if (orgRows.length > 0) return;
+  await seedDemoData(target);
+}
 
 export function getAppDb(): KeyLensDb {
   if (!db) {
     db = process.env.DATABASE_URL ? getDb() : getDb(appDbPath());
+  }
+  if (!seedPromise) {
+    seedPromise = ensureDemoSeed(db).catch((err) => {
+      console.error("[keylens:db] demo seed failed:", err);
+    });
   }
   return db;
 }
