@@ -75,3 +75,54 @@ Next.js App Router app. Routes:
 - All handlers call the packages above; no business logic in the web app.
 - Portal gate: read `x-portal-token` header; allow if env PORTAL_TOKEN is
   unset or matches (MOCK_MODE dev convenience).
+
+## @keylens/billing (new, owned by kl-engine)
+
+Stripe-powered subscriptions for the $99/mo tier plus annual. Minimal
+fetch-based Stripe client (no SDK, no new deps). All functions must fail
+gracefully (typed error) when STRIPE_SECRET_KEY is missing.
+
+- `createCheckoutSession({ orgId, plan, successUrl, cancelUrl }) =>
+  Promise<{ url: string; sessionId: string }>` - creates a Stripe Checkout
+  Session for the org's price (plan `monthly` -> STRIPE_PRICE_MONTHLY,
+  `annual` -> STRIPE_PRICE_ANNUAL), creating/finding a customer for the org.
+- `verifyWebhookSignature(secret: string, payload: string | Buffer,
+  signatureHeader: string): boolean` - standard Stripe HMAC-SHA256
+  verification (stripe-signature header `t=...,v1=...`), timing-safe.
+- `recordWebhookEvent({ db, orgId?, stripeEvent }) => Promise<void>` -
+  persists subscription status changes into the new `subscriptions` table
+  (orgId from customer metadata, upsert by stripeCustomerId).
+- `getSubscription({ db, orgId }) => Promise<SubscriptionRow | null>`.
+- Tests: fetch-stub tests for checkout payload/headers; HMAC vector tests for
+  verifyWebhookSignature (correct, tampered, wrong secret).
+
+## Real connectors (extend @keylens/connectors, owned by kl-engine)
+
+New source files (exports frozen):
+- `openai-admin.ts`:
+  - `listOpenAiProjects({ token }) => Promise<Array<{ id, name }>>`
+  - `listServiceAccounts({ token, projectId }) => Promise<Array<{ id, name,
+    status }>>`
+  - `createServiceAccountKey({ token, projectId, serviceAccountId, name? }) =>
+    Promise<{ keyId, rawKey, masked }>` (creates a key for an existing SA)
+  - `createServiceAccountWithKey(...) => Promise<{ serviceAccountId, keyId,
+    rawKey, masked }>`
+  - `deleteServiceAccount({ token, projectId, serviceAccountId }) => Promise<void>`
+  - `fetchOpenAiUsageByKey({ token, orgId, startTime, endTime }) =>
+    Promise<UsagePoint[]>`
+  - All use `https://api.openai.com/v1/organization/...` REST shapes as of
+    2026; treat responses defensively (shape drift => typed error, never throw
+    opaque).
+- `vercel-env.ts`:
+  - `scanVercelEnv({ token, teamId, limitProjects? }) => Promise<AIKey[]>`
+    - `GET /v9/projects?teamId=...`, per project `GET /v9/projects/{name}/env`
+    - flag env names/values matching provider patterns; sourceRef
+      `vercel-project/<project>:env/<KEY>`; status "unknown"; sourceType "vercel"
+  - register the `vercel` source connector in `real-connectors.ts` (env
+    guarded: VERCEL_TOKEN + VERCEL_TEAM_ID).
+- `packages/rotation/src/real.ts` (reachable from runRotation when
+  `MOCK_MODE=false`): for provider `openai` with OPENAI_ADMIN_KEY +
+  OPENAI_PROJECT_ID set, implement real key swap: create new SA key, mark old
+  rotating, return result; still dry-run first by default. Other providers
+  keep "guided rotation" placeholder result.
+- Tests for all of the above with `globalThis.fetch` stubs (no network).

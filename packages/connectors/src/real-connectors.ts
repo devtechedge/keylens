@@ -2,6 +2,7 @@ import type { AIKey, KeySourceType } from "@keylens/core";
 import { PROVIDERS } from "@keylens/core";
 import { discoverFromText } from "./discover";
 import { registerConnector, type Connector } from "./registry";
+import { scanVercelEnv } from "./vercel-env";
 
 /**
  * Real GitHub connector: scans a GitHub org/user's repositories (default
@@ -184,7 +185,6 @@ function notWired(sourceType: KeySourceType): Connector {
 
 const UNWIRED_SOURCES: KeySourceType[] = [
   "github-actions",
-  "vercel",
   "netlify",
   "aws-secrets",
   "gcp-secrets",
@@ -195,3 +195,20 @@ const UNWIRED_SOURCES: KeySourceType[] = [
 for (const sourceType of UNWIRED_SOURCES) {
   registerConnector(notWired(sourceType));
 }
+
+/**
+ * Vercel env connector: env-guarded (requires VERCEL_TOKEN and
+ * VERCEL_TEAM_ID). The connector is always registered; scanning without the
+ * env variables throws a clear configuration error.
+ */
+registerConnector({
+  sourceType: "vercel",
+  async scan() {
+    const token = process.env.VERCEL_TOKEN;
+    const teamId = process.env.VERCEL_TEAM_ID;
+    if (!token || !teamId) {
+      throw new Error("vercel connector requires VERCEL_TOKEN and VERCEL_TEAM_ID");
+    }
+    return scanVercelEnv({ token, teamId });
+  },
+});

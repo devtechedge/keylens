@@ -4,6 +4,7 @@ import { getDb, keys, orgs, rotationJobs } from "@keylens/db";
 import type { KeyLensDb } from "@keylens/db";
 import type { RotationJob, RotationStatus, RotationSummary } from "@keylens/core";
 import { isMockMode } from "./mock";
+import { realRotateKey } from "./real";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const WEEK_MS = 7 * DAY_MS;
@@ -23,8 +24,6 @@ async function upsertJob(db: KeyLensDb, job: RotationJob): Promise<void> {
     scheduledFor: job.scheduledFor,
     startedAt: job.startedAt,
     finishedAt: job.finishedAt,
-    result: job.result,
-    error: job.error,
   };
   const existing = await db.select().from(rotationJobs).where(eq(rotationJobs.id, job.id)).get();
   if (existing) {
@@ -72,13 +71,36 @@ export async function runRotation({
       status = "dry-run";
       result = "dry run ok";
       finishedAt = now;
-    } else {
+    } else if (isMockMode()) {
       // Mock rotation: flip status in DB, no network.
       await db.update(keys).set({ status: "rotating" }).where(eq(keys.id, key.id)).run();
       await db.update(keys).set({ status: "active", lastRotatedAt: now }).where(eq(keys.id, key.id)).run();
       status = "success";
       result = `mock rotate: ${key.provider} key swapped`;
       finishedAt = now;
+    } else {
+      // Real rotation (openai via admin API; guided placeholder for others).
+      const outcome = await realRotateKey(db, key);
+      status = outcome.ok ? "success" : "failed";
+      result = outcome.result ?? "";
+      finishedAt = now;
+      if (!outcome.ok) {
+        const jobError = outcome.error ?? "rotation failed";
+        const job: RotationJob = {
+          id: jobId("rot", orgId, key.id),
+          orgId,
+          keyId: key.id,
+          provider: key.provider,
+          status,
+          scheduledFor: now,
+          startedAt: now,
+          finishedAt,
+          error: jobError,
+        };
+        await upsertJob(db, job);
+        jobs.push(job);
+        continue;
+      }
     }
 
     const job: RotationJob = {

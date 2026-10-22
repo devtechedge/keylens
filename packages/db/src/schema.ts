@@ -97,8 +97,35 @@ export const rotationJobs = sqliteTable(
   ],
 );
 
+export const subscriptions = sqliteTable(
+  "subscriptions",
+  {
+    id: text("id").primaryKey(),
+    orgId: text("org_id").notNull().references(() => orgs.id),
+    stripeCustomerId: text("stripe_customer_id"),
+    stripeSubscriptionId: text("stripe_subscription_id"),
+    plan: text("plan").$type<SubscriptionPlan>().default("monthly").notNull(),
+    status: text("status").$type<SubscriptionStatus>().default("none").notNull(),
+    currentPeriodEnd: integer("current_period_end"),
+    createdAt: integer("created_at").notNull(),
+    updatedAt: integer("updated_at").notNull(),
+  },
+  (t) => [index("subscriptions_org_idx").on(t.orgId)],
+);
+
+export type SubscriptionPlan = "monthly" | "annual";
+export type SubscriptionStatus =
+  | "none"
+  | "trialing"
+  | "active"
+  | "past_due"
+  | "canceled"
+  | "incomplete"
+  | "unpaid";
+
 export type OrgRow = typeof orgs.$inferSelect;
 export type KeyRow = typeof keys.$inferSelect;
 export type UsagePointRow = typeof usagePoints.$inferSelect;
 export type AnomalyRow = typeof anomalies.$inferSelect;
 export type RotationJobRow = typeof rotationJobs.$inferSelect;
+export type SubscriptionRow = typeof subscriptions.$inferSelect;

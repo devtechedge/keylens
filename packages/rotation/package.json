@@ -11,6 +11,7 @@
     "test": "vitest run --pool=forks"
   },
   "dependencies": {
+    "@keylens/connectors": "workspace:*",
     "@keylens/core": "workspace:*",
     "@keylens/db": "workspace:*",
     "drizzle-orm": "^0.40.0"

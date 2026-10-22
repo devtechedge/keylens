@@ -57,6 +57,17 @@ CREATE TABLE IF NOT EXISTS rotation_jobs (
   result TEXT,
   error TEXT
 );
+CREATE TABLE IF NOT EXISTS subscriptions (
+  id TEXT PRIMARY KEY,
+  org_id TEXT NOT NULL REFERENCES orgs(id),
+  stripe_customer_id TEXT,
+  stripe_subscription_id TEXT,
+  plan TEXT DEFAULT 'monthly' NOT NULL,
+  status TEXT DEFAULT 'none' NOT NULL,
+  current_period_end INTEGER,
+  created_at INTEGER NOT NULL,
+  updated_at INTEGER NOT NULL
+);
 CREATE INDEX IF NOT EXISTS orgs_created_at_idx ON orgs (created_at);
 CREATE UNIQUE INDEX IF NOT EXISTS keys_fingerprint_idx ON keys (fingerprint);
 CREATE INDEX IF NOT EXISTS keys_org_idx ON keys (org_id);
@@ -66,3 +77,4 @@ CREATE INDEX IF NOT EXISTS anomalies_org_detected_idx ON anomalies (org_id, dete
 CREATE INDEX IF NOT EXISTS anomalies_key_idx ON anomalies (key_id);
 CREATE INDEX IF NOT EXISTS rotation_org_sched_idx ON rotation_jobs (org_id, scheduled_for);
 CREATE INDEX IF NOT EXISTS rotation_key_idx ON rotation_jobs (key_id);
+CREATE INDEX IF NOT EXISTS subscriptions_org_idx ON subscriptions (org_id);
