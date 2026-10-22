@@ -96,7 +96,9 @@ provide credentials (OpenAI, GitHub, Vercel, Slack) and flip `MOCK_MODE=false`.
 `GET /api/summary`, `GET /api/keys`, `GET /api/anomalies`,
 `GET /api/usage-series?keyId=`, `POST /api/scan`, `POST /api/rotate`,
 `POST /api/alerts/test`, `POST /api/onboarding/mock-connect`,
-`POST /api/anomalies/[id]/resolve`, `PATCH /api/settings`.
+`POST /api/anomalies/[id]/resolve`, `PATCH /api/settings`,
+`GET /api/billing/status`, `POST /api/billing/checkout`,
+`POST /api/billing/webhook`.
 
 ## Roadmap
 
