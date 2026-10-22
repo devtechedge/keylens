@@ -36,8 +36,11 @@ this one left off.
    old daily logs unless the task needs history.
 4. Treat seeded facts as leads, not gospel: handoffs have been stale before.
    Re-verify before acting.
-5. Slash commands in apps without slash support map to skill names: read that
-   skill and run it.
+5. Hermes commands in DSH are the `curator`, `journey`, `learn`, and `refine`
+   skills. Do not call `selflearn_*` tools; they exist only inside OpenCode.
+6. Slash commands the user types (`/dev-memory`, `/oss`, `/learn`, ...) are
+   skill names in apps without slash support: read that skill and run it.
+   `/oss` = `ship-oss-pr`.
 
 ## 2. During the session
 
@@ -79,7 +82,7 @@ Save procedure (same turn as the cue, before the final reply):
    delete substance: distill it. Compaction safety: back up to
    `~/.agents/memory-backups/` first, append moved text word for word to the
    dated logs, then confirm every PR number, SHA, date and backtick path still
-   appears somewhere in the folder. Finish by making box and laptop stores
+   appears somewhere in the folder. Finish by making the box and laptop stores
    byte-identical; if the laptop is offline, log "laptop sync pending" in
    today's daily log and run the sync when it is online. Never claim the stores
    match unchecked.
