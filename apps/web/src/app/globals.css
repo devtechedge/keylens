@@ -7,8 +7,29 @@
     "Liberation Mono", monospace;
 }
 
+/* Class-based dark mode: .dark on <html> (Tailwind v4). */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
+  color-scheme: light;
+  --kl-bg: #f1f5f9;
+  --kl-surface: #ffffff;
+  --kl-border: #e2e8f0;
+  --kl-text: #0f172a;
+  --kl-muted: #64748b;
+  --kl-spark-stroke: #6366f1;
+  --kl-spark-fill: #6366f1;
+}
+
+.dark {
   color-scheme: dark;
+  --kl-bg: #020617;
+  --kl-surface: rgb(15 23 42 / 0.6);
+  --kl-border: rgb(30 41 59 / 0.8);
+  --kl-text: #e2e8f0;
+  --kl-muted: #94a3b8;
+  --kl-spark-stroke: #818cf8;
+  --kl-spark-fill: #6366f1;
 }
 
 html,
@@ -18,14 +39,21 @@ body {
 
 body {
   font-family: var(--font-sans);
-  @apply bg-slate-950 text-slate-200 antialiased;
+  @apply bg-slate-100 text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-200;
 }
 
 ::selection {
-  @apply bg-indigo-500/30 text-white;
+  @apply bg-indigo-500/30 text-slate-900 dark:text-white;
 }
 
-/* Skeleton shimmer */
+/* Focus-visible rings for keyboard navigation */
+:focus-visible {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* ---------- Skeleton shimmer ---------- */
 @keyframes kl-shimmer {
   0% {
     background-position: -480px 0;
@@ -36,17 +64,26 @@ body {
 }
 
 .kl-skeleton {
-  background: linear-gradient(
+  background-image: linear-gradient(
     90deg,
-    rgb(30 41 59 / 0.45) 25%,
-    rgb(51 65 85 / 0.6) 50%,
-    rgb(30 41 59 / 0.45) 75%
+    rgb(203 213 225 / 0.55) 25%,
+    rgb(226 232 240 / 0.9) 50%,
+    rgb(203 213 225 / 0.55) 75%
   );
   background-size: 960px 100%;
   animation: kl-shimmer 1.4s linear infinite;
 }
 
-/* Onboarding scan progress */
+.dark .kl-skeleton {
+  background-image: linear-gradient(
+    90deg,
+    rgb(30 41 59 / 0.45) 25%,
+    rgb(51 65 85 / 0.6) 50%,
+    rgb(30 41 59 / 0.45) 75%
+  );
+}
+
+/* ---------- Onboarding scan progress ---------- */
 @keyframes kl-progress {
   from {
     width: 2%;
@@ -59,4 +96,104 @@ body {
 .kl-progress {
   width: 2%;
   animation: kl-progress 1.4s ease-out forwards;
+}
+
+/* ---------- Section entrance ---------- */
+@keyframes kl-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.kl-enter {
+  animation: kl-enter 0.4s ease-out both;
+}
+
+.kl-enter-1 {
+  animation: kl-enter 0.4s ease-out 0.03s both;
+}
+
+.kl-enter-2 {
+  animation: kl-enter 0.4s ease-out 0.06s both;
+}
+
+.kl-enter-3 {
+  animation: kl-enter 0.4s ease-out 0.09s both;
+}
+
+.kl-enter-4 {
+  animation: kl-enter 0.4s ease-out 0.12s both;
+}
+
+/* ---------- Key detail drawer ---------- */
+@keyframes kl-backdrop {
+  from {
+    opacity: 0;
+  }
+}
+
+.kl-backdrop {
+  animation: kl-backdrop 0.22s ease-out;
+}
+
+@keyframes kl-drawer {
+  from {
+    transform: translateX(100%);
+  }
+}
+
+.kl-drawer {
+  animation: kl-drawer 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* ---------- Overlay hover-reveal scrollbars ---------- */
+.kl-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+.kl-scroll:hover {
+  scrollbar-color: rgb(148 163 184 / 0.5) transparent;
+}
+
+.kl-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.kl-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.kl-scroll::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 9999px;
+}
+
+.kl-scroll:hover::-webkit-scrollbar-thumb {
+  background: rgb(148 163 184 / 0.35);
+}
+
+.kl-scroll:hover::-webkit-scrollbar-thumb:hover {
+  background: rgb(148 163 184 / 0.55);
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .kl-skeleton,
+  .kl-progress,
+  .kl-enter,
+  .kl-enter-1,
+  .kl-enter-2,
+  .kl-enter-3,
+  .kl-enter-4,
+  .kl-backdrop,
+  .kl-drawer {
+    animation: none;
+  }
 }

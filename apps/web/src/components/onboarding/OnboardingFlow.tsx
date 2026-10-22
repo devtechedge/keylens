@@ -83,15 +83,15 @@ export function OnboardingFlow() {
 
   return (
     <div className="mx-auto flex min-h-[70vh] w-full max-w-md flex-col items-center justify-center px-4">
-      <div className="w-full rounded-2xl border border-slate-800 bg-slate-900/70 p-8 shadow-xl">
+      <div className="kl-enter w-full rounded-2xl border border-slate-200 bg-white p-8 shadow-lg dark:border-slate-800 dark:bg-slate-900/70 dark:shadow-2xl">
         <div className="flex flex-col items-center text-center">
-          <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 text-lg font-bold text-white">
+          <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 text-lg font-bold text-white shadow-md transition-transform duration-200 hover:scale-105">
             KL
           </span>
-          <h1 className="mt-4 text-xl font-semibold text-slate-100">
+          <h1 className="mt-4 text-xl font-semibold text-slate-900 dark:text-slate-100">
             {phase === "results" ? "You're covered" : "Connect your GitHub org"}
           </h1>
-          <p className="mt-1.5 text-sm text-slate-400">
+          <p className="mt-1.5 text-sm text-slate-500 dark:text-slate-400">
             {phase === "results"
               ? "KeyLens found your AI keys and is watching them."
               : "We'll scan your repos for exposed AI keys. Fully mocked for this demo."}
@@ -99,7 +99,7 @@ export function OnboardingFlow() {
         </div>
 
         {error && (
-          <p className="mt-4 rounded-lg bg-red-500/10 px-3 py-2 text-center text-xs text-red-300">
+          <p className="mt-4 rounded-lg bg-red-500/10 px-3 py-2 text-center text-xs text-red-700 dark:text-red-300">
             {error}
           </p>
         )}
@@ -108,21 +108,21 @@ export function OnboardingFlow() {
           {phase === "idle" && (
             <button
               onClick={connect}
-              className="w-full rounded-xl bg-slate-800 px-4 py-3 text-sm font-medium text-slate-100 transition hover:bg-slate-700"
+              className="w-full rounded-xl bg-slate-900 px-4 py-3 text-sm font-medium text-white transition hover:bg-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700"
             >
               Connect GitHub
             </button>
           )}
 
           {phase === "connecting" && (
-            <div className="w-full rounded-xl border border-slate-800 bg-slate-950/60 px-4 py-3 text-center text-sm text-slate-400">
+            <div className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-center text-sm text-slate-500 dark:border-slate-800 dark:bg-slate-950/60 dark:text-slate-400">
               Connecting to GitHub...
             </div>
           )}
 
           {phase === "connected" && (
             <>
-              <div className="flex items-center justify-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300">
+              <div className="flex items-center justify-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-700 dark:text-emerald-300">
                 <span>✓</span>
                 <span>
                   Connected · {repos ?? 0} repositories
@@ -130,7 +130,7 @@ export function OnboardingFlow() {
               </div>
               <button
                 onClick={scanOrg}
-                className="w-full rounded-xl bg-indigo-500 px-4 py-3 text-sm font-medium text-white transition hover:bg-indigo-400"
+                className="w-full rounded-xl bg-indigo-500 px-4 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-indigo-400"
               >
                 Scan org for AI keys
               </button>
@@ -138,12 +138,12 @@ export function OnboardingFlow() {
           )}
 
           {phase === "scanning" && (
-            <div className="rounded-xl border border-slate-800 bg-slate-950/60 px-4 py-4">
+            <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-4 dark:border-slate-800 dark:bg-slate-950/60">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-slate-300">Scanning repositories...</span>
+                <span className="text-slate-700 dark:text-slate-300">Scanning repositories...</span>
                 <span className="text-slate-500">~1.5s</span>
               </div>
-              <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-slate-800">
+              <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800">
                 <div ref={progressRef} className="kl-progress h-full rounded-full bg-gradient-to-r from-indigo-500 to-violet-500" />
               </div>
               <p className="mt-2 text-xs text-slate-500">
@@ -159,30 +159,30 @@ export function OnboardingFlow() {
                 {Object.entries(grouped).map(([provider, count]) => (
                   <div
                     key={provider}
-                    className="flex items-center gap-3 rounded-xl border border-slate-800 bg-slate-950/60 px-4 py-3"
+                    className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 transition-colors duration-150 hover:border-indigo-300 dark:border-slate-800 dark:bg-slate-950/60 dark:hover:border-indigo-500/50"
                   >
                     <ProviderIcon provider={provider} size="sm" />
-                    <span className="flex-1 text-sm text-slate-200">
+                    <span className="flex-1 text-sm text-slate-800 dark:text-slate-200">
                       {PROVIDER_LABELS[provider] ?? provider}
                     </span>
-                    <span className="rounded-full bg-slate-800 px-2 py-0.5 text-xs text-slate-300">
+                    <span className="rounded-full bg-slate-200 px-2 py-0.5 text-xs text-slate-600 dark:bg-slate-800 dark:text-slate-300">
                       {count} key{count === 1 ? "" : "s"}
                     </span>
                   </div>
                 ))}
                 {Object.keys(grouped).length === 0 && (
-                  <p className="rounded-xl border border-slate-800 bg-slate-950/60 px-4 py-3 text-center text-sm text-slate-400">
+                  <p className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-center text-sm text-slate-500 dark:border-slate-800 dark:bg-slate-950/60 dark:text-slate-400">
                     No AI keys found in this scan.
                   </p>
                 )}
               </div>
-              <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-center text-sm text-emerald-300">
+              <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-center text-sm text-emerald-700 dark:text-emerald-300">
                 ✓ {scan.newKeys.length} keys found · {scan.candidateSecrets} candidate
                 secrets · {scan.scannedRepos} repos scanned
               </div>
               <button
                 onClick={() => router.push("/")}
-                className="w-full rounded-xl bg-indigo-500 px-4 py-3 text-sm font-medium text-white transition hover:bg-indigo-400"
+                className="w-full rounded-xl bg-indigo-500 px-4 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-indigo-400"
               >
                 Go to dashboard
               </button>

@@ -2,6 +2,7 @@ import type { UsageSeriesPoint } from "@/api-types";
 
 /**
  * Hand-rolled inline SVG sparkline. No chart library.
+ * Colors come from CSS variables so they adapt to light/dark themes.
  */
 export function Sparkline({
   points,
@@ -45,15 +46,15 @@ export function Sparkline({
     >
       <defs>
         <linearGradient id="kl-spark-fill" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#6366f1" stopOpacity="0.35" />
-          <stop offset="100%" stopColor="#6366f1" stopOpacity="0" />
+          <stop offset="0%" stopColor="var(--kl-spark-fill)" stopOpacity="0.35" />
+          <stop offset="100%" stopColor="var(--kl-spark-fill)" stopOpacity="0" />
         </linearGradient>
       </defs>
       <polygon points={area} fill="url(#kl-spark-fill)" />
       <polyline
         points={line}
         fill="none"
-        stroke="#818cf8"
+        stroke="var(--kl-spark-stroke)"
         strokeWidth="1.75"
         strokeLinejoin="round"
         strokeLinecap="round"

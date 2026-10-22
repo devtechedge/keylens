@@ -4,13 +4,13 @@
  */
 
 const PROVIDER_META: Record<string, { initials: string; bg: string }> = {
-  openai: { initials: "OA", bg: "bg-emerald-500/15 text-emerald-300 ring-emerald-400/30" },
-  anthropic: { initials: "AN", bg: "bg-rose-500/15 text-rose-300 ring-rose-400/30" },
-  "aws-bedrock": { initials: "AW", bg: "bg-orange-500/15 text-orange-300 ring-orange-400/30" },
-  "azure-openai": { initials: "AZ", bg: "bg-sky-500/15 text-sky-300 ring-sky-400/30" },
-  gemini: { initials: "GM", bg: "bg-violet-500/15 text-violet-300 ring-violet-400/30" },
-  mistral: { initials: "MI", bg: "bg-amber-500/15 text-amber-300 ring-amber-400/30" },
-  other: { initials: "?", bg: "bg-slate-500/15 text-slate-300 ring-slate-400/30" },
+  openai: { initials: "OA", bg: "bg-emerald-500/15 text-emerald-600 ring-emerald-500/30 dark:text-emerald-300 dark:ring-emerald-400/30" },
+  anthropic: { initials: "AN", bg: "bg-rose-500/15 text-rose-600 ring-rose-500/30 dark:text-rose-300 dark:ring-rose-400/30" },
+  "aws-bedrock": { initials: "AW", bg: "bg-orange-500/15 text-orange-600 ring-orange-500/30 dark:text-orange-300 dark:ring-orange-400/30" },
+  "azure-openai": { initials: "AZ", bg: "bg-sky-500/15 text-sky-600 ring-sky-500/30 dark:text-sky-300 dark:ring-sky-400/30" },
+  gemini: { initials: "GM", bg: "bg-violet-500/15 text-violet-600 ring-violet-500/30 dark:text-violet-300 dark:ring-violet-400/30" },
+  mistral: { initials: "MI", bg: "bg-amber-500/15 text-amber-600 ring-amber-500/30 dark:text-amber-300 dark:ring-amber-400/30" },
+  other: { initials: "?", bg: "bg-slate-500/15 text-slate-600 ring-slate-500/30 dark:text-slate-300 dark:ring-slate-400/30" },
 };
 
 export function ProviderIcon({
@@ -21,8 +21,7 @@ export function ProviderIcon({
   size?: "sm" | "md";
 }) {
   const meta = PROVIDER_META[provider] ?? PROVIDER_META.other!;
-  const box =
-    size === "sm" ? "h-6 w-6 text-[10px]" : "h-8 w-8 text-xs";
+  const box = size === "sm" ? "h-6 w-6 text-[10px]" : "h-8 w-8 text-xs";
   return (
     <span
       className={`inline-flex shrink-0 items-center justify-center rounded-lg font-semibold ring-1 ${box} ${meta.bg}`}
@@ -33,11 +32,11 @@ export function ProviderIcon({
 }
 
 const STATUS_PILL: Record<string, string> = {
-  active: "bg-emerald-500/10 text-emerald-300 ring-emerald-400/30",
-  rotating: "bg-amber-500/10 text-amber-300 ring-amber-400/30",
-  leaked: "bg-red-500/10 text-red-300 ring-red-400/30",
-  retired: "bg-slate-500/10 text-slate-400 ring-slate-500/30",
-  unknown: "bg-slate-500/10 text-slate-400 ring-slate-500/30",
+  active: "bg-emerald-500/10 text-emerald-700 ring-emerald-500/25 dark:text-emerald-300 dark:ring-emerald-400/30",
+  rotating: "bg-amber-500/10 text-amber-700 ring-amber-500/25 dark:text-amber-300 dark:ring-amber-400/30",
+  leaked: "bg-red-500/10 text-red-700 ring-red-500/25 dark:text-red-300 dark:ring-red-400/30",
+  retired: "bg-slate-500/10 text-slate-500 ring-slate-500/25 dark:text-slate-400 dark:ring-slate-500/30",
+  unknown: "bg-slate-500/10 text-slate-500 ring-slate-500/25 dark:text-slate-400 dark:ring-slate-500/30",
 };
 
 export function StatusPill({ status }: { status: string }) {
@@ -68,17 +67,17 @@ export function SourceLabel({ source }: { source: string }) {
 }
 
 const SEVERITY_STYLES: Record<string, string> = {
-  critical: "bg-red-500/15 text-red-300 ring-red-400/30",
-  high: "bg-orange-500/15 text-orange-300 ring-orange-400/30",
-  medium: "bg-amber-500/15 text-amber-300 ring-amber-400/30",
-  low: "bg-sky-500/15 text-sky-300 ring-sky-400/30",
-  info: "bg-slate-500/15 text-slate-300 ring-slate-500/30",
+  critical: "bg-red-500/15 text-red-700 ring-red-500/30 dark:text-red-300 dark:ring-red-400/30",
+  high: "bg-orange-500/15 text-orange-700 ring-orange-500/30 dark:text-orange-300 dark:ring-orange-400/30",
+  medium: "bg-amber-500/15 text-amber-700 ring-amber-500/30 dark:text-amber-300 dark:ring-amber-400/30",
+  low: "bg-sky-500/15 text-sky-700 ring-sky-500/30 dark:text-sky-300 dark:ring-sky-400/30",
+  info: "bg-slate-500/15 text-slate-600 ring-slate-500/30 dark:text-slate-300 dark:ring-slate-500/30",
 };
 
 export function SeverityBadge({ severity }: { severity: string }) {
   return (
     <span
-      className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium capitalize ring-1 ${
+      className={`inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide ring-1 ${
         SEVERITY_STYLES[severity] ?? SEVERITY_STYLES.info!
       }`}
     >

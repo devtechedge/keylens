@@ -37,16 +37,18 @@ export function AnomalyFeed({
   }
 
   return (
-    <section className="rounded-xl border border-slate-800 bg-slate-900/60">
-      <div className="flex items-center justify-between border-b border-slate-800 px-4 py-3">
-        <h2 className="text-sm font-semibold text-slate-100">Anomalies</h2>
-        <span className="rounded-full bg-slate-800 px-2 py-0.5 text-xs text-slate-400">
+    <section className="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900/60">
+      <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3 dark:border-slate-800">
+        <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+          Anomalies
+        </h2>
+        <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-500 dark:bg-slate-800 dark:text-slate-400">
           {items.length} open
         </span>
       </div>
 
       {error && (
-        <p className="border-b border-slate-800 bg-red-500/10 px-4 py-2 text-xs text-red-300">
+        <p className="border-b border-slate-200 bg-red-500/10 px-4 py-2 text-xs text-red-700 dark:border-slate-800 dark:text-red-300">
           {error}
         </p>
       )}
@@ -54,27 +56,32 @@ export function AnomalyFeed({
       {items.length === 0 ? (
         <div className="p-8 text-center">
           <p className="text-2xl">✓</p>
-          <p className="mt-1 text-sm text-slate-400">All clear</p>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">All clear</p>
           <p className="mt-0.5 text-xs text-slate-500">
             No open anomalies right now
           </p>
         </div>
       ) : (
-        <ul className="divide-y divide-slate-800/60">
+        <ul>
           {items.map((a) => (
-            <li key={a.id} className="flex gap-3 px-4 py-3.5">
+            <li
+              key={a.id}
+              className="group flex gap-3 border-b border-slate-100 px-4 py-3.5 transition-colors duration-150 last:border-0 hover:bg-slate-50 dark:border-slate-800/60 dark:hover:bg-slate-800/30"
+            >
               <span
                 className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${SEVERITY_DOT[a.severity] ?? SEVERITY_DOT.info!}`}
               />
               <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-center gap-2">
-                  <p className="text-sm font-medium text-slate-100">{a.title}</p>
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <p className="text-sm font-medium text-slate-900 dark:text-slate-100">
+                    {a.title}
+                  </p>
                   <SeverityBadge severity={a.severity} />
-                  <span className="rounded-full bg-slate-800 px-2 py-0.5 text-[11px] text-slate-400">
+                  <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-500 dark:bg-slate-800 dark:text-slate-400">
                     <KindLabel kind={a.kind} />
                   </span>
                 </div>
-                <p className="mt-1 text-sm text-slate-400">{a.detail}</p>
+                <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{a.detail}</p>
                 <div className="mt-2 flex items-center justify-between gap-2">
                   <p className="text-xs text-slate-500">
                     {timeAgo(a.detectedAt)}
@@ -83,7 +90,7 @@ export function AnomalyFeed({
                   <button
                     onClick={() => resolve(a.id)}
                     disabled={resolving === a.id}
-                    className="rounded-lg border border-slate-700 px-2.5 py-1 text-xs font-medium text-slate-300 transition hover:bg-slate-800 disabled:opacity-50"
+                    className="rounded-lg border border-slate-300 px-2.5 py-1 text-xs font-medium text-slate-600 transition hover:bg-slate-100 disabled:opacity-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
                   >
                     {resolving === a.id ? "Resolving..." : "Resolve"}
                   </button>

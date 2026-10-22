@@ -92,14 +92,14 @@ export function KeyDrawer({
       <button
         aria-label="Close drawer"
         onClick={onClose}
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        className="kl-backdrop absolute inset-0 bg-black/60 backdrop-blur-sm"
       />
-      <aside className="absolute inset-y-0 right-0 flex w-full max-w-md flex-col overflow-y-auto border-l border-slate-800 bg-slate-900 shadow-2xl">
-        <div className="flex items-center justify-between border-b border-slate-800 p-5">
+      <aside className="kl-drawer kl-scroll absolute inset-y-0 right-0 flex w-full max-w-md flex-col overflow-y-auto border-l border-slate-200 bg-white shadow-2xl dark:border-slate-800 dark:bg-slate-900">
+        <div className="flex items-center justify-between border-b border-slate-200 p-5 dark:border-slate-800">
           <div className="flex items-center gap-3">
             <ProviderIcon provider={initial.provider} />
             <div>
-              <p className="text-sm font-semibold text-slate-100">
+              <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                 {initial.providerName}
               </p>
               <div className="mt-0.5">
@@ -109,7 +109,7 @@ export function KeyDrawer({
           </div>
           <button
             onClick={onClose}
-            className="rounded-lg px-2.5 py-1.5 text-sm text-slate-400 transition hover:bg-slate-800 hover:text-slate-200"
+            className="rounded-lg px-2.5 py-1.5 text-sm text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200"
           >
             Esc
           </button>
@@ -117,44 +117,48 @@ export function KeyDrawer({
 
         <div className="flex-1 space-y-6 p-5">
           <div>
-            <p className="font-mono text-lg text-indigo-300">{initial.masked}</p>
+            <p className="font-mono text-lg text-indigo-600 dark:text-indigo-300">
+              {initial.masked}
+            </p>
             {initial.label && (
-              <p className="mt-1 text-sm text-slate-400">{initial.label}</p>
+              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                {initial.label}
+              </p>
             )}
           </div>
 
           <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
             <div>
               <dt className="text-xs text-slate-500">Source</dt>
-              <dd className="mt-0.5 text-slate-300">
+              <dd className="mt-0.5 text-slate-700 dark:text-slate-300">
                 <SourceLabel source={initial.sourceType} />
               </dd>
             </div>
             <div>
               <dt className="text-xs text-slate-500">Location</dt>
-              <dd className="mt-0.5 truncate font-mono text-xs text-slate-400" title={initial.sourceRef ?? undefined}>
+              <dd className="mt-0.5 truncate font-mono text-xs text-slate-500 dark:text-slate-400" title={initial.sourceRef ?? undefined}>
                 {initial.sourceRef ?? "unknown"}
               </dd>
             </div>
             <div>
               <dt className="text-xs text-slate-500">Owner</dt>
-              <dd className="mt-0.5 text-slate-300">
+              <dd className="mt-0.5 text-slate-700 dark:text-slate-300">
                 {initial.ownerEmail ?? "unassigned"}
               </dd>
             </div>
             <div>
               <dt className="text-xs text-slate-500">Created</dt>
-              <dd className="mt-0.5 text-slate-300">{dateShort(initial.createdAt)}</dd>
+              <dd className="mt-0.5 text-slate-700 dark:text-slate-300">{dateShort(initial.createdAt)}</dd>
             </div>
             <div>
               <dt className="text-xs text-slate-500">Last seen</dt>
-              <dd className="mt-0.5 text-slate-300">
+              <dd className="mt-0.5 text-slate-700 dark:text-slate-300">
                 {initial.lastSeenAt ? timeAgo(initial.lastSeenAt) : "never"}
               </dd>
             </div>
             <div>
               <dt className="text-xs text-slate-500">Last rotated</dt>
-              <dd className="mt-0.5 text-slate-300">
+              <dd className="mt-0.5 text-slate-700 dark:text-slate-300">
                 {dateShort(initial.lastRotatedAt)}
               </dd>
             </div>
@@ -166,7 +170,7 @@ export function KeyDrawer({
                 Spend · last 14 days
               </h3>
               {stats && (
-                <span className="text-xs text-slate-400">
+                <span className="text-xs text-slate-500 dark:text-slate-400">
                   {formatUsdFull(stats.total)} total · peak {formatUsdFull(stats.peak)}
                 </span>
               )}
@@ -174,7 +178,7 @@ export function KeyDrawer({
             {points === null ? (
               <div className="kl-skeleton h-24 rounded-lg" />
             ) : (
-              <div className="rounded-lg border border-slate-800 bg-slate-950/60 p-3">
+              <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 dark:border-slate-800 dark:bg-slate-950/60">
                 <Sparkline points={points} />
               </div>
             )}
@@ -182,12 +186,12 @@ export function KeyDrawer({
 
           <section className="space-y-3">
             {jobMsg && (
-              <p className="rounded-lg bg-slate-800/60 px-3 py-2 text-xs text-slate-300">
+              <p className="rounded-lg bg-slate-100 px-3 py-2 text-xs text-slate-600 dark:bg-slate-800/60 dark:text-slate-300">
                 Last action: {jobMsg}
               </p>
             )}
             {error && (
-              <p className="rounded-lg bg-red-500/10 px-3 py-2 text-xs text-red-300">
+              <p className="rounded-lg bg-red-500/10 px-3 py-2 text-xs text-red-700 dark:text-red-300">
                 {error}
               </p>
             )}
@@ -196,21 +200,21 @@ export function KeyDrawer({
               <button
                 onClick={() => run("dryrun")}
                 disabled={busy !== null}
-                className="rounded-lg border border-indigo-500/40 bg-indigo-500/10 px-3.5 py-2 text-sm font-medium text-indigo-300 transition hover:bg-indigo-500/20 disabled:opacity-50"
+                className="rounded-lg border border-indigo-500/40 bg-indigo-500/10 px-3.5 py-2 text-sm font-medium text-indigo-600 transition hover:bg-indigo-500/20 disabled:opacity-50 dark:text-indigo-300"
               >
                 {busy === "dryrun" ? "Running..." : "Preview rotation"}
               </button>
               <button
                 onClick={() => (confirm === "rotate" ? run("rotate") : setConfirm("rotate"))}
                 disabled={busy !== null || initial.status === "retired"}
-                className="rounded-lg bg-indigo-500 px-3.5 py-2 text-sm font-medium text-white transition hover:bg-indigo-400 disabled:opacity-50"
+                className="rounded-lg bg-indigo-500 px-3.5 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-indigo-400 disabled:opacity-50"
               >
                 {confirm === "rotate" ? "Confirm rotate?" : "Rotate now"}
               </button>
               <button
                 onClick={() => (confirm === "retire" ? run("retire") : setConfirm("retire"))}
                 disabled={busy !== null || initial.status === "retired"}
-                className="rounded-lg border border-slate-700 px-3.5 py-2 text-sm font-medium text-slate-300 transition hover:bg-slate-800 disabled:opacity-50"
+                className="rounded-lg border border-slate-300 px-3.5 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 disabled:opacity-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
               >
                 {confirm === "retire" ? "Confirm retire?" : "Retire"}
               </button>
