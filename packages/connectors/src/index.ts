@@ -7,6 +7,7 @@ export * from "./usage";
 export * from "./registry";
 export * from "./openai-admin";
 export * from "./vercel-env";
+export * from "./persist";
 export { isMockMode } from "./mock";
-export { persistFindings, scanOrg } from "./scan";
+export { persistFindings } from "./persist";
 export { scanGitHubOrg } from "./real-connectors";
