@@ -1,0 +1,62 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", monospace;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  @apply bg-slate-950 text-slate-200 antialiased;
+}
+
+::selection {
+  @apply bg-indigo-500/30 text-white;
+}
+
+/* Skeleton shimmer */
+@keyframes kl-shimmer {
+  0% {
+    background-position: -480px 0;
+  }
+  100% {
+    background-position: 480px 0;
+  }
+}
+
+.kl-skeleton {
+  background: linear-gradient(
+    90deg,
+    rgb(30 41 59 / 0.45) 25%,
+    rgb(51 65 85 / 0.6) 50%,
+    rgb(30 41 59 / 0.45) 75%
+  );
+  background-size: 960px 100%;
+  animation: kl-shimmer 1.4s linear infinite;
+}
+
+/* Onboarding scan progress */
+@keyframes kl-progress {
+  from {
+    width: 2%;
+  }
+  to {
+    width: 92%;
+  }
+}
+
+.kl-progress {
+  width: 2%;
+  animation: kl-progress 1.4s ease-out forwards;
+}
