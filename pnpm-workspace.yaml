@@ -1,9 +1,6 @@
 packages:
   - "apps/*"
   - "packages/*"
-
-# pnpm blocks dependency build scripts by default; esbuild needs its
-# postinstall to self-validate on Windows. Allow just that package.
-# (DB layer uses node:sqlite + libsql, no native build needed.)
-onlyBuiltDependencies:
-  - esbuild
+allowBuilds:
+  better-sqlite3: true
+  esbuild: true
