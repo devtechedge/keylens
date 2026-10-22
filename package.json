@@ -1,0 +1,18 @@
+{
+  "name": "keylens",
+  "version": "0.1.0",
+  "private": true,
+  "description": "KeyLens: AI key lifecycle + spend brain for startups running agents",
+  "scripts": {
+    "dev": "pnpm --filter @keylens/web dev",
+    "dev:worker": "pnpm --filter @keylens/worker dev",
+    "build": "pnpm -r build",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "seed": "pnpm --filter @keylens/db seed",
+    "db:push": "pnpm --filter @keylens/db db:push"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
