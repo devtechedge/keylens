@@ -103,8 +103,9 @@ build.
 
 Agent operating procedures used for this project live in
 [`docs/workflows/`](docs/workflows/README.md): dev-memory, curator, journey,
-learn, OSS PR playbook, and refine. They are sanitized working copies; private
-operational details are scrubbed to placeholders.
+learn, OSS PR playbook, refine, and GitHub repo presentation. They are
+sanitized working copies; private operational details are scrubbed to
+placeholders.
 
 ## Status
 
