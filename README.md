@@ -99,6 +99,13 @@ build.
 4. Stripe billing: `$99/mo` tier + annual plan, trial funnel from free scans.
 5. Multi-tenant auth (Supabase/Auth.js), SSO, audit logs, SOC 2 posture.
 
+## Workflows
+
+Agent operating procedures used for this project live in
+[`docs/workflows/`](docs/workflows/README.md): dev-memory, curator, journey,
+learn, OSS PR playbook, and refine. They are sanitized working copies; private
+operational details are scrubbed to placeholders.
+
 ## Status
 
 MVP scaffold. Everything runs locally with seeded demo data. Contributions,
